@@ -1,4 +1,4 @@
-<?php
+<?php 
 /**
  * Zend Framework (http://framework.zend.com/)
  *
@@ -27,7 +27,7 @@ return array(
             'application' => array(
                 'type'    => 'Literal',
                 'options' => array(
-                    'route'    => '/application',
+                    'route'    => '/',
                     'defaults' => array(
                         '__NAMESPACE__' => 'Application\Controller',
                         'controller'    => 'Index',
@@ -50,15 +50,89 @@ return array(
                     ),
                 ),
             ),
+            'pages' => array(
+            	'type' => 'Segment',
+            	'options' => array(
+            		'route' => '/pages[/:action]',
+            		'constraints' => array(
+            			'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+            		),
+            		'defaults' => array(
+            			'controller' => 'Application\Controller\Pages',
+            			'action'     => 'index',
+            		),
+            	),
+            ),
+            'resource' => array(
+            	'type' => 'Segment',
+            	'options' => array(
+            		'route' => '/resource[/:action]',
+            		'constraints' => array(
+            			'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+            		),
+            		'defaults' => array(
+            			'controller' => 'Application\Controller\Resource',
+            			'action'     => 'index',
+            		),
+            	),
+            ),
+            'shop' => array(
+            	'type' => 'Segment',
+            	'options' => array(
+            		'route' => '/shop[/:action]',
+            		'constraints' => array(
+            			'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+            		),
+            		'defaults' => array(
+            			'controller' => 'Application\Controller\Shop',
+            			'action'     => 'index',
+            		),
+            	),
+            ),
+            'user' => array(
+            	'type' => 'Segment',
+            	'options' => array(
+            		'route' => '/user[/:action]',
+            		'constraints' => array(
+            			'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+            		),
+            		'defaults' => array(
+            			'controller' => 'Application\Controller\User',
+            			'action'     => 'index',
+            		),
+            	),
+            ),
         ),
     ),
     'service_manager' => array(
+    	'factories' => array(
+            'translator' => 'Zend\I18n\Translator\TranslatorServiceFactory',
+            'Zend\Cache\StorageFactory' => function() {
+            	return Zend\Cache\StorageFactory::factory(
+            		array(
+            			'adapter' => array(
+            				'name' => 'filesystem',
+            				'options' => array(
+            					'dirLevel' => 2,
+            					'cacheDir' => 'data/cache',
+            					'dirPermission' => 0755,
+            					'filePermission' => 0666,
+            					'namespaceSeparator' => '-db-',
+            					'ttl' => 43200,
+            				),
+            			),
+            			'plugins' => array('serializer'),
+            		)
+            	);
+            },
+        ),
         'abstract_factories' => array(
             'Zend\Cache\Service\StorageCacheAbstractServiceFactory',
             'Zend\Log\LoggerAbstractServiceFactory',
         ),
         'aliases' => array(
-            'translator' => 'MvcTranslator',
+            'cache' => 'Zend\Cache\StorageFactory',
+            'db' => 'Zend\Db\Adapter\Adapter',
         ),
     ),
     'translator' => array(
@@ -73,7 +147,11 @@ return array(
     ),
     'controllers' => array(
         'invokables' => array(
-            'Application\Controller\Index' => 'Application\Controller\IndexController'
+            'Application\Controller\Index' => 'Application\Controller\IndexController',
+            'Application\Controller\Pages' => 'Application\Controller\PagesController',
+            'Application\Controller\Resource' => 'Application\Controller\ResourceController',
+            'Application\Controller\Shop' => 'Application\Controller\ShopController',
+            'Application\Controller\User' => 'Application\Controller\UserController',
         ),
     ),
     'view_manager' => array(
